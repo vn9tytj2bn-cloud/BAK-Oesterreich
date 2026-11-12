@@ -151,7 +151,7 @@
  .bak-controls>.bak-source-access button{min-width:106px;width:106px;}
 }
 
-/* Stufe 197 – AHS-Information als bewusst optionaler Zusatz, unabhängig von Suchfiltern. */
+/* Stufe 197 – AHS-Information als bewusst optionaler Zusatz. */
 .bak-ahs-guide{border:1px solid #d4e0d2;border-radius:11px;background:#f8faf6;margin:9px 0 15px;overflow:hidden;color:#263a30}
 .bak-ahs-guide>summary{cursor:pointer;padding:12px 16px;color:#255a3c;font-size:15px;font-weight:700;line-height:1.45}
 .bak-ahs-guide>summary:hover{background:#eff4ea}
@@ -170,7 +170,16 @@
 .bak-ahs-profile h3{font-size:15px;margin:0 0 4px;color:#254d35}
 .bak-ahs-profile p{margin:0 0 5px}
 .bak-ahs-profile .bak-outlinks{margin:4px 0 0}
+.bak-school-hits{border:1px solid #cdddc9;border-radius:12px;background:#f4f8f1;margin:0 0 15px;padding:15px 17px;color:#263a30}
+.bak-school-hits h2{font-size:17px;margin:0 0 5px;color:#254d35}
+.bak-school-hits>p{margin:0 0 10px;color:#496252;font-size:14px;line-height:1.5}
+.bak-school-hit-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:0;padding:0;list-style:none}
+.bak-school-hit-list li{background:#fff;border:1px solid #dce5d9;border-radius:9px;padding:11px 12px;min-width:0}
+.bak-school-hit-list strong,.bak-school-hit-list span{display:block}
+.bak-school-hit-list span{margin-top:3px;color:#5c6e62;font-size:13px;line-height:1.45}
+.bak-school-hit-list a{display:inline-block;margin-top:7px;color:#245a3b;text-decoration:underline;text-underline-offset:2px;font-weight:700}
 @media(max-width:700px){.bak-ahs-columns{grid-template-columns:minmax(0,1fr)}.bak-ahs-guide .bak-ahs-content{padding:13px 12px}}
+@media(max-width:700px){.bak-school-hit-list{grid-template-columns:minmax(0,1fr)}}
 </style></head><body><section id="bak-view" class="bak-wrap" aria-label="Berufsanforderungskatalog Österreich">
  <div class="bak-topnav"><a class="bak-return" href="https://vn9tytj2bn-cloud.github.io/digiBWCoach/">← Zum digiBWCoach</a></div>
  <div class="eyebrow">Berufliche Orientierung</div>
@@ -204,7 +213,7 @@
    <section aria-labelledby="bak-ahs-schwerpunkte"><h2 id="bak-ahs-schwerpunkte">Fachliche Schwerpunkte und Studienvorbereitung</h2>
     <ul>
      <li><strong>Technik und digitale Welt:</strong> Informatik, Medien, Darstellende Geometrie, technisches Gestalten</li>
-     <li><strong>Naturwissenschaften:</strong> Biologie, Physik, Chemie, Laborarbeit, Ökologie</li>
+     <li><strong>Naturwissenschaften:</strong> Biologie, Humanbiologie, Physik, Chemie, Laborarbeit, Ökologie, Medizin</li>
      <li><strong>Sprachen und Gesellschaft:</strong> Fremdsprachen, mehrsprachiger Unterricht, Wirtschafts- und Gesellschaftsthemen</li>
      <li><strong>Musik, Kunst und Gestaltung:</strong> Instrumente, Gesang, bildnerisches Gestalten, kreative Projekte</li>
      <li><strong>Sport und Gesundheit:</strong> Sport- und Leistungsschwerpunkte, Bewegung, Gesundheit und Ernährung</li>
@@ -216,6 +225,7 @@
   <p class="bak-ahs-disclaimer"><strong>Zur Einordnung:</strong> Dies ist eine Auswahl relevanter Schwerpunktbereiche und nachgewiesener Sonderangebote, keine vollständige Liste aller österreichischen AHS-Standorte. AHS wird deshalb nicht als zusätzlicher allgemeiner Berufsfilter angezeigt.</p>
  </div>
 </details>
+<section id="bak-school-hits" class="bak-school-hits" aria-labelledby="bak-school-hits-heading" hidden></section>
 <p id="bak-count" class="bak-count" role="status" aria-live="polite"></p><p id="bak-selection-status" class="bak-sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
  <div class="bak-results"><div id="bak-list" class="bak-list" aria-label="Berufsprofile" role="region" tabindex="-1"></div><article class="bak-detail" id="bak-detail" tabindex="-1" aria-labelledby="bak-detail-heading"><p>Wähle einen Beruf aus der Liste.</p></article></div>
  </section><script>
@@ -366,11 +376,32 @@ const everydaySearchAliasSource=Object.freeze({
  'brieftraegerin':['AT-00032']
 });
 const everydaySearchAliases=Object.freeze(Object.fromEntries(Object.entries(everydaySearchAliasSource).map(([term,ids])=>[clean(term),ids])));
+/* Nachgewiesene Schulschwerpunkte zu den Suchbegriffen Medizin und Humanbiologie.
+   Sie werden als Studienvorbereitung bzw. BHS-Ausbildung angezeigt und nicht als Berufsprofile gewertet. */
+const schoolSearchOffers=Object.freeze([
+ {name:'BRG Hamerling, Linz',type:'AHS',focus:'MED – Gesundheit & Humanbiologie; vertiefender und praxisorientierter Unterricht in Biologie, Chemie und Physik.',url:'https://brghamerling.at/?page_id=239864',terms:['medizin','humanbiologie']},
+ {name:'BORG Perg',type:'AHS',focus:'Humanbiologie – Labor; medizinische und gesundheitliche Vertiefung mit biologisch-chemischer Laborpraxis.',url:'https://www.borg-perg.ac.at/humanbiologie-labor/',terms:['medizin','humanbiologie']},
+ {name:'Sternstein Gymnasium, Bad Leonfelden',type:'AHS',focus:'MEDIZIN+ / NAWI – Naturwissenschaften mit Fokus auf Humanmedizin.',url:'https://www.sternsteingymnasium.at/',terms:['medizin','humanbiologie']},
+ {name:'HTL Grieskirchen',type:'BHS',focus:'Medizin-Informatik – Informatik verbunden mit Medizin, Ernährung, Fitness, Gesundheit, Biologie und Technik.',url:'https://htl-grieskirchen.at/?pagename=medizin-informatik',terms:['medizin','medizin informatik','medizininformatik']}
+]);
+function schoolMatches(q){
+ if(!q)return [];
+ return schoolSearchOffers.filter(offer=>offer.terms.some(term=>q.includes(clean(term))));
+}
+function renderSchoolHits(q){
+ const el=$('bak-school-hits'),offers=schoolMatches(q);el.replaceChildren();el.hidden=!offers.length;if(!offers.length)return 0;
+ const heading=document.createElement('h2');heading.id='bak-school-hits-heading';heading.textContent='Passende Schulschwerpunkte';el.append(heading);
+ const intro=document.createElement('p');intro.textContent='Diese Angebote bereiten fachlich auf Medizin, Gesundheit oder Humanbiologie vor. AHS-Schwerpunkte sind keine eigenen Berufsabschlüsse; die HTL ist eine berufsbildende höhere Schule.';el.append(intro);
+ const list=document.createElement('ul');list.className='bak-school-hit-list';
+ offers.forEach(offer=>{const li=document.createElement('li');const name=document.createElement('strong');name.textContent=offer.type+' · '+offer.name;li.append(name);const focus=document.createElement('span');focus.textContent=offer.focus;li.append(focus);addOutsideLink(li,offer.url,'Zum Schulangebot ↗');list.append(li)});
+ el.append(list);return offers.length;
+}
 function match(e,q){return Object.hasOwn(everydaySearchAliases,q)?everydaySearchAliases[q].includes(e.id):clean([e.name,e.id,e.area,...e.aliases,...e.hilfreich].join(' ')).includes(q)}
 function firstLetter(x){return x.name[0].toLocaleUpperCase('de-AT').replace('Ä','A').replace('Ö','O').replace('Ü','U')}
 function render(){let q=clean($('bak-search').value).trim(), area=$('bak-area').value;let found=sorted.filter(e=>( (!area||e.wege.includes(area)||e.vergleichbare_schulwege.includes(area))&&(!letter||firstLetter(e)===letter)&&(!q||match(e,q))));
- $('bak-count').textContent=found.length===0?'Keine Treffer':found.length+' '+(found.length===1?'Beruf':'Berufe')+' gefunden';
- const list=$('bak-list');list.replaceChildren();if(!found.length){const p=document.createElement('p');p.className='bak-empty';p.textContent='Für diese Suche gibt es keine Treffer.';list.append(p);
+ const schoolHitCount=renderSchoolHits(q);
+ $('bak-count').textContent=found.length===0?(schoolHitCount?'Keine Berufsprofile · '+schoolHitCount+' passende '+(schoolHitCount===1?'Schule':'Schulen'):'Keine Treffer'):found.length+' '+(found.length===1?'Beruf':'Berufe')+' gefunden'+(schoolHitCount?' · '+schoolHitCount+' passende '+(schoolHitCount===1?'Schule':'Schulen'):'');
+ const list=$('bak-list');list.replaceChildren();if(!found.length){const p=document.createElement('p');p.className='bak-empty';p.textContent=schoolHitCount?'Für diese Suche gibt es passende Schulen, aber kein eigenes Berufsprofil.':'Für diese Suche gibt es keine Treffer.';list.append(p);
  const reset=document.createElement('button');reset.type='button';reset.className='bak-reset';reset.textContent='Alle Berufe zeigen';reset.addEventListener('click',()=>{$('bak-search').value='';$('bak-area').value='';letter='';$('bak-letters-summary').textContent='Alphabet A–Z';buttons.querySelectorAll('button').forEach((b,i)=>b.setAttribute('aria-pressed',i===0?'true':'false'));selected=null;render();$('bak-search').focus()});list.append(reset)}
  found.forEach(e=>{let b=document.createElement('button');b.type='button';b.className='bak-item';b.setAttribute('aria-current',e.id===selected?'true':'false');b.textContent=e.name+(e.profilklasse==='Aufbau'?' · Zusatzqualifikation':'')+(e.zeitstatus_hinweis?' · ab 2027':'');b.dataset.profileId=e.id;let s=document.createElement('small');s.textContent=e.area+(area&& !e.wege.includes(area) && e.vergleichbare_schulwege.includes(area)?' · vergleichbare Schulausbildung':'');b.append(s);b.addEventListener('click',ev=>{selected=e.id;detail(e);renderSelected();$('bak-selection-status').textContent=e.name+' ausgewählt. Angaben aktualisiert.';if(ev.detail===0)$('bak-detail').focus();else if(window.matchMedia('(max-width:700px)').matches){const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;requestAnimationFrame(()=>$('bak-detail').scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'}))}});list.append(b)});
  if(selected&&!found.some(e=>e.id===selected))selected=null;
